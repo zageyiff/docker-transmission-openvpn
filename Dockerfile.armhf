@@ -1,29 +1,42 @@
-FROM resin/rpi-raspbian:stretch
-MAINTAINER Kristian Haugene
+FROM balenalib/raspberry-pi:buster
+MAINTAINER Zageyiff
 
 VOLUME /data
 VOLUME /config
 
 # Update packages and install software
 RUN apt-get update \
-    && apt-get -y install transmission-cli transmission-common transmission-daemon \
-    && apt-get install -y dumb-init unzip openvpn curl ufw git tinyproxy jq \
+    && apt-get -y install \
+        ca-certificates \
+        curl \
+        dumb-init \
+        git \
+        jq \
+        openvpn \
+        transmission-cli \
+        transmission-common \
+        transmission-daemon \
+        tinyproxy \
+        unzip \
+        ufw \
+    && c_rehash \
     && curl -L -o /tmp/release.zip https://github.com/Secretmapper/combustion/archive/release.zip \
     && unzip /tmp/release.zip -d /opt/transmission-ui/ \
     && rm /tmp/release.zip \
     && git clone git://github.com/endor/kettu.git /opt/transmission-ui/kettu \
     && mkdir /opt/transmission-ui/transmission-web-control \
     && curl -L https://github.com/ronggang/twc-release/raw/master/src.tar.gz \
-     | tar -C /opt/transmission-ui/transmission-web-control/ -xzv \
+        | tar -C /opt/transmission-ui/transmission-web-control/ -xzv \
     && ln -s /usr/share/transmission/web/style /opt/transmission-ui/transmission-web-control \
     && ln -s /usr/share/transmission/web/images /opt/transmission-ui/transmission-web-control \
     && ln -s /usr/share/transmission/web/javascript /opt/transmission-ui/transmission-web-control \
     && ln -s /usr/share/transmission/web/index.html /opt/transmission-ui/transmission-web-control/index.original.html \
     && apt-get purge git unzip \
     && apt-get autoremove --purge \
-    && apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* \
     && curl -L https://github.com/jwilder/dockerize/releases/download/v0.6.0/dockerize-linux-armhf-v0.6.0.tar.gz \
-     | tar -C /usr/local/bin -xzv \
+        | tar -C /usr/local/bin -xzv \
     && groupmod -g 1000 users \
     && useradd -u 911 -U -d /config -s /bin/false abc \
     && usermod -G users abc
