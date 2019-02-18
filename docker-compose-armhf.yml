@@ -1,8 +1,10 @@
-version: '2'
+version: '3'
 
 services:
  transmission:
-  image: haugene/transmission-openvpn:latest-armhf
+  build:
+   context: https://github.com/zageyiff/docker-transmission-openvpn.git
+   dockerfile: Dockerfile.armhf
   cap_add:
     - NET_ADMIN
   devices:
